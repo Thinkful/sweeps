@@ -15,15 +15,15 @@ Run the example to see a fully functional implementation in action!
 To run:
 
    Run
-        export SWEEP_TASK_LIBS=sweeps.example
-        python example.py --setup
-        python sweep.py
+    
+    export SWEEP_TASK_LIBS=sweeps.example
+    python example.py --setup
+    python sweep.py
+
 
    and you'll see lots of sent message notices.
    Repeat the run step:
-        python sweep.py
+    
+    python sweep.py
 
    and you'll see no messages are sent.
-
-
-
