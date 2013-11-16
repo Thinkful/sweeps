@@ -1,12 +1,17 @@
 
 
 """
-Run something on a timer for potentials matching arbitrary parameters
+Very simple way to run arbitrary tasks that need to be audited and retriable.
 """
 
 from datetime import datetime
 
-class TaskRun(db.Model):
+class TaskStatus(db.Model):
+    """A single run of a single task on a single object.
+    
+    Conceptually, though not enforced, a task's run status 
+    is immutable once the task has completed.
+    """
     id
     task_table
     task_id
@@ -17,7 +22,7 @@ class TaskRun(db.Model):
 
     @staticmethod
     def new(self, task, instance):
-        return TaskRun(
+        return TaskStatus(
             task_table=task.__tablename__,
             task_id=task.id,
             instance_table=instance.__tablename__,
@@ -33,7 +38,7 @@ class TaskRun(db.Model):
 
     @staticmethod
     def start(self, task, instance):
-        tr = TaskRun.new(task, instance)
+        tr = TaskStatus.new(task, instance)
         tr.set_status('RUNNING')
         return tr
 
@@ -45,19 +50,22 @@ class TaskRun(db.Model):
 
 
 class AbstractTask(object):
+    """The interface for a task.
+    Must be subclassed, see skeleten funcs below.
+    """
     id
     name
 
     def allowed_to_run(self, instance):
         # TODO Note we don't protect against race conditions
-        return TaskRun.query \
+        return TaskStatus.query \
             .filter(instance_table==instance.__tablename__) \
             .filter(instance_id==instance.id) \
             .filter(status==['SUCCESS', 'RUNNING']).count() == 0
 
     def _run_one(self, instance):
         try:
-            tr = TaskRun.start(self, instance)
+            tr = TaskStatus.start(self, instance)
             self.run(pot)
             tr.successful()
             print "Success", pot
