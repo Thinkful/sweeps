@@ -1,49 +1,52 @@
 
 
-from .models import AbstractTask
+"""
+Example sweeps implementation that sends surveys 
+(well, prints out that a someone should receive a survey).
+"""
 
-class SurveyConfig(object):
-    def __init__(self, name, subject, delay_days):
-        self.name = name
-        self.subject = subject
-        self.delay_days = delay_days
+from optparse import OptionParser
+from sweeps.models import AbstractTask
+from sweeps.sweep import sweep
+from main import db
 
-    @property
-    def template(self):
-        return 'survey-%s' % self.name
+class SurveyRecipient(db.Model):
+    __tablename__ = 'sweeps_example_recipient'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100))
 
-class SendEdSurvey(AbstractTask, db.Model):
-    __tablename__ = 'ed_metrics_survey'
+    def __repr__(self):
+        return self.email
 
-    SURVEY_PERIODS = {
-        "WEEK-1" : SurveyConfig("WEEK-1", "Checking In", 7),
-        "WEEK-2" : SurveyConfig("WEEK-2", "How's Your Thinkful Course Going?", 7),
-    }
-
-    def _get_survey_period(self):
-        return EdMetricsSurvey.SURVEY_PERIODS[self.name]
+class SendSurvey(AbstractTask, db.Model):
+    __tablename__ = 'sweeps_example_survey'
 
     def get_instances(self, asof):
-        period = self._get_survey_period()
-        start_date = asof - period.delay_days
-        pots = Potential.query.filter(Potential.close_date==start_date)
-        for pot in pots:
-            if pot.stage() == 'Current student':
-                yield pot
+        for pot in SurveyRecipient.query.all():
+            yield pot
 
-    def run(self, pot):
-        sp = self._get_survey_period()
-        body = render_template(sp.template)
-
-        recipient = pot.contact.email
-
-        print recipient, '-->', sp.subject
-
+    def run(self, recipient):
+        print '  %s gets a %s survey!' % (recipient, self.name)
 
 def setup():
-    ses1 = SendEdSurvey(name='WEEK-1')
-    db.session.add(ses1)
+    # Set up the Task to run
+    for name in ['week1', 'week2', 'week3']:
+        survey = SendSurvey(name=name)
+        db.session.add(survey)
+    
+    # Create the instances to run once for each task
+    for recip in ['recipient@one.com', 'recipient@two.com']:
+        sr = SurveyRecipient(email=recip)
+        db.session.add(sr)
+
     db.session.commit()
 
 if __name__ == '__main__':
-    setup()
+    parser = OptionParser("%prog")
+    parser.add_option("--setup", action="store_true", help="setup the db")
+    (options, args) = parser.parse_args()
+
+    if options.setup:
+        db.create_all()
+        setup()
+
