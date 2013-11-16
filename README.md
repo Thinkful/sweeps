@@ -14,16 +14,15 @@ Run the example to see a fully functional implementation in action!
 
 To run:
 
-   Run
-    
     export SWEEP_TASK_LIBS=sweeps.example
     python example.py --setup
     python sweep.py
 
 
-   and you'll see lots of sent message notices.
-   Repeat the run step:
+and you'll see lots of "sent" message notices (note the app doesn't actually _send_ email, just tells you it _could_.
+
+Rerun to see that nothing is sent the 2nd time:
     
     python sweep.py
 
-   and you'll see no messages are sent.
+See? No messages are sent!
