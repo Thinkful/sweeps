@@ -3,6 +3,7 @@
 Base models for tasks and statuses
 """
 
+import traceback
 from datetime import datetime
 from main import db
 
@@ -74,7 +75,7 @@ class AbstractTask(object):
             tr.successful()
         except Exception, e:
             tr.failed()
-            print e
+            print traceback.format_exc()
 
     def sweep(self, asof):
         print "Sweeping %s %s asof %s" % (self.__class__.__name__, self.name, asof)
