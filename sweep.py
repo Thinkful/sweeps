@@ -15,13 +15,13 @@ def _get_subclasses():
         for tc in task_classes.split(','):
             __import__(tc)
 
-def sweep(asof=None):
+def sweep(asof=None, _verbose=True):
     _get_subclasses()
     if not asof:
         asof = datetime.utcnow()
     for task_class in AbstractTask.__subclasses__():
         for task in task_class.query.all():
-            task.sweep(asof)
+            task.sweep(asof, _verbose=_verbose)
 
 if __name__ == '__main__':
     sweep()

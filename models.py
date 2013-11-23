@@ -77,14 +77,14 @@ class AbstractTask(object):
             tr.failed()
             print traceback.format_exc()
 
-    def sweep(self, asof):
-        print "Sweeping %s %s asof %s" % (self.__class__.__name__, self.name, asof)
+    def sweep(self, asof, _verbose=True):
+        if _verbose: print "Sweeping %s %s asof %s" % (self.__class__.__name__, self.name, asof)
         num_swept = 0
         for instance in self.get_instances(asof):
             if self.allowed_to_run(instance):
                 self._run_one(instance)
                 num_swept+=1
-        print "Swept %s." % (num_swept)
+        if _verbose: print "Swept %s." % (num_swept)
 
     def get_instances(self, asof):
         raise Exception("Incomplete subclass!")
