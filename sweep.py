@@ -12,7 +12,7 @@ def _get_subclasses():
     # use this env var to find them.
     task_classes = os.environ.get('SWEEP_TASK_LIBS', None)
     if task_classes:
-        for tc in task_classes.split(','):
+        for tc in task_classes.split(':'):
             __import__(tc)
 
 def sweep(asof=None, _verbose=True):
