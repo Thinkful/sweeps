@@ -58,6 +58,7 @@ class AbstractTask(object):
     """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    created_asof = db.Column(db.DateTime, default=datetime.utcnow)
 
     def allowed_to_run(self, instance):
         # TODO Note we don't protect against race conditions
