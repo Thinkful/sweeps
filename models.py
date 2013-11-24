@@ -5,7 +5,7 @@ Base models for tasks and statuses
 
 import traceback
 from datetime import datetime
-from main import db
+from main import db, app
 
 class TaskStatus(db.Model):
     """A single run of a single task on a single object.
@@ -81,10 +81,11 @@ class AbstractTask(object):
     def sweep(self, asof, _verbose=True):
         if _verbose: print "Sweeping %s %s asof %s" % (self.__class__.__name__, self.name, asof)
         num_swept = 0
-        for instance in self.get_instances(asof):
-            if self.allowed_to_run(instance):
-                self._run_one(instance)
-                num_swept+=1
+        with app.test_request_context():
+            for instance in self.get_instances(asof):
+                if self.allowed_to_run(instance):
+                    self._run_one(instance)
+                    num_swept+=1
         if _verbose: print "Swept %s." % (num_swept)
 
     def get_instances(self, asof):
