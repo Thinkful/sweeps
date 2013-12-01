@@ -49,7 +49,7 @@ class TaskStatus(db.Model):
         self.set_status('SUCCESS', datetime.utcnow())
 
     def failed(self):
-        self.set_status('FAIL', datetime.utcnow())
+        self.set_status('FAILED', datetime.utcnow())
 
 
 class AbstractTask(object):
