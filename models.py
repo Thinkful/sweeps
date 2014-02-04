@@ -59,7 +59,7 @@ class AbstractTask(object):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     created_asof = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.Enum("ACTIVE", "RETIRED", name='status_types'))
+    status = db.Column(db.Enum("ACTIVE", "RETIRED", name='sweeps_task_status_types'))
 
     def allowed_to_run(self, instance):
         # TODO Note we don't protect against race conditions
