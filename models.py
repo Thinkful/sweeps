@@ -5,9 +5,10 @@ Base models for tasks and statuses
 
 import traceback
 from datetime import datetime
-from main import db, app
+from main import db, app, TFBase
+print "===== importing sweeps.models"
 
-class TaskStatus(db.Model):
+class TaskStatus(TFBase, db.Model):
     """A single run of a single task on a single object.
     
     Conceptually, though not enforced, a task's run status 
@@ -95,3 +96,13 @@ class AbstractTask(object):
     def run(self, instance):
         raise Exception("Incomplete subclass!")
 
+# SQLAlchemy relationships can be made here if they are to classes 
+# outside this module. 
+# mkrelationships will be called after all the modules listed in 
+# model_meta.all_modules have been imported 
+
+def mkrelationships():
+    pass
+
+import model_meta
+model_meta.init_module('sweeps.models', mkrelationships)
