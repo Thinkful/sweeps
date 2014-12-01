@@ -6,7 +6,7 @@ Base models for tasks and statuses
 import traceback
 from datetime import datetime
 from main import db, app, TFBase
-print "===== importing sweeps.models"
+import model_meta
 
 class TaskStatus(TFBase, db.Model):
     """A single run of a single task on a single object.
@@ -104,5 +104,4 @@ class AbstractTask(object):
 def mkrelationships():
     pass
 
-import model_meta
 model_meta.init_module('sweeps.models', mkrelationships)
