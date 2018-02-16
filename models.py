@@ -98,8 +98,6 @@ class AbstractTask(object):
         if _verbose:
             print "Swept %s." % (num_swept)
 
-        db.session.commit()
-
     def get_instances(self, asof):
         raise Exception("Incomplete subclass!")
 
